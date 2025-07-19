@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="mermaid.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 300px;
+        }
+
+        .mermaid svg {
+            width: auto;
+            height: auto;
+            max-width: none !important;
+            max-height: none;
+        }
+        #settings {
+            display: flex;
+            z-index: 100;
+            left: 5px;
+            bottom: 5px;
+            position: fixed;
+        }
+        #zoom-value {
+            width: 50px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="mermaid">
+</div>
+<pre id="source" style="display: none">
+    %diagram%
+</pre>
+<div id="settings">
+    <button id="zoom-in">+</button><button id="zoom-out">-</button><input id="zoom-value" readonly value="100">
+</div>
+<script>
+    mermaid.initialize({
+        startOnLoad: false,
+        theme: 'default'
+    });
+    const zoom_step = 20;
+    let zoom = 100;
+
+    document.querySelector('button#zoom-in').addEventListener('click', () => {
+        zoom += zoom_step;
+        size_change();
+    });
+
+    document.querySelector('button#zoom-out').addEventListener('click', () => {
+        if(zoom > zoom_step) {
+            zoom -= zoom_step;
+            size_change();
+        }
+    })
+
+    function size_change() {
+        const numbers = document.querySelector('.mermaid svg').getAttribute('viewBox').split(' ').map(Number);
+        document.querySelector('.mermaid').style.width = numbers[2] * zoom /100 + "px";
+        document.querySelector('.mermaid').style.height = numbers[3] * zoom /100 + "px";
+        document.querySelector('#zoom-value').value = zoom + "%";
+        mermaid_render();
+    }
+
+    async function mermaid_render() {
+        const mer = document.querySelector('.mermaid');
+        const source = document.querySelector('#source');
+        const {svg, bind} = await mermaid.render('myDiagram', source.innerText);
+        mer.innerHTML = svg;
+    }
+    async function initialize() {
+        await mermaid_render();
+        size_change();
+    }
+    initialize();
+</script>
+</body>
+</html>

@@ -9,7 +9,11 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.yamanakahirofumi.siren.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-        <postStartupActivity implementation="com.github.yamanakahirofumi.siren.startup.MyProjectActivity" />
+        <fileType name="Mermaid"
+                  implementationClass="com.github.yamanakahirofumi.siren.MermaidFileType"
+                  fieldName="INSTANCE"
+                  language="Mermaid"
+                  extensions="mermaid;mmd"/>
+        <fileEditorProvider implementation="com.github.yamanakahirofumi.siren.editor.MermaidEditorProvider"/>
     </extensions>
 </idea-plugin>
