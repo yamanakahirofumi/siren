@@ -3,6 +3,18 @@
     <id>com.github.yamanakahirofumi.siren</id>
     <name>siren</name>
     <vendor>yamanakahirofumi</vendor>
+    <description><![<![CDATA[
+A Simple Renderer for Mermaid diagrams (Siren).
+
+Key Features:
+ - Support for .mermaid and .mmd file formats
+ - Integrated Mermaid diagram editor powered by mermaid.js v11.8.1
+ - Zoom in/out capability for diagram viewing
+ - Simple and lightweight design
+
+Uses mermaid.js (MIT License) - Copyright (c) 2014 - 2024 Knut Sveidqvist
+    ]]>
+    </description>
 
     <depends>com.intellij.modules.platform</depends>
 
