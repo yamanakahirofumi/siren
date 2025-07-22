@@ -3,7 +3,7 @@
     <id>com.github.yamanakahirofumi.siren</id>
     <name>siren</name>
     <vendor>yamanakahirofumi</vendor>
-    <description><![<![CDATA[
+    <description><![CDATA[
 A Simple Renderer for Mermaid diagrams (Siren).
 
 Key Features:
