@@ -2,6 +2,12 @@
 
 # siren Changelog
 
+## ver. 0.0.2
+### Change
+- Updated plugin description
+### mermaid.js
+- ver.11.8.1
+
 ## ver. 0.0.1
 ### Added
 - Zoom in/out feature
