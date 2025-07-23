@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>com.github.yamanakahirofumi.siren</id>
     <name>siren</name>
-    <vendor>yamanakahirofumi</vendor>
+    <vendor>mokojarasi</vendor>
     <description><![CDATA[
 A Simple Renderer for Mermaid diagrams (Siren).
 
@@ -13,8 +13,7 @@ Key Features:
  - Simple and lightweight design
 
 Uses mermaid.js (MIT License) - Copyright (c) 2014 - 2024 Knut Sveidqvist
-    ]]>
-    </description>
+    ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
 
