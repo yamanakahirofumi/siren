@@ -22,6 +22,7 @@
             max-width: none !important;
             max-height: none;
         }
+
         #settings {
             display: flex;
             z-index: 100;
@@ -29,6 +30,7 @@
             bottom: 5px;
             position: fixed;
         }
+
         #zoom-value {
             width: 50px;
         }
@@ -42,7 +44,9 @@
     %diagram%
 </pre>
 <div id="settings">
-    <button id="zoom-in">+</button><button id="zoom-out">-</button><input id="zoom-value" readonly value="100">
+    <button id="zoom-in">+</button>
+    <button id="zoom-out">-</button>
+    <input id="zoom-value" readonly value="100">
 </div>
 <script>
     mermaid.initialize({
@@ -58,16 +62,17 @@
     });
 
     document.querySelector('button#zoom-out').addEventListener('click', () => {
-        if(zoom > zoom_step) {
-            zoom -= zoom_step;
-            size_change();
+        if (zoom < zoom_step) {
+            return;
         }
+        zoom -= zoom_step;
+        size_change();
     })
 
     function size_change() {
         const numbers = document.querySelector('.mermaid svg').getAttribute('viewBox').split(' ').map(Number);
-        document.querySelector('.mermaid').style.width = numbers[2] * zoom /100 + "px";
-        document.querySelector('.mermaid').style.height = numbers[3] * zoom /100 + "px";
+        document.querySelector('.mermaid').style.width = numbers[2] * zoom / 100 + "px";
+        document.querySelector('.mermaid').style.height = numbers[3] * zoom / 100 + "px";
         document.querySelector('#zoom-value').value = zoom + "%";
         mermaid_render();
     }
@@ -78,10 +83,12 @@
         const {svg, bind} = await mermaid.render('myDiagram', source.innerText);
         mer.innerHTML = svg;
     }
+
     async function initialize() {
         await mermaid_render();
         size_change();
     }
+
     initialize();
 </script>
 </body>

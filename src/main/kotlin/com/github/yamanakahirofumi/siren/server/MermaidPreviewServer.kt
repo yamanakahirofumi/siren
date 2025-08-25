@@ -57,7 +57,7 @@ class MermaidPreviewServer(parentDisposable: Disposable) : Disposable {
     /**
      * Gets the preview URL for the given diagram ID.
      */
-    fun getPreviewUrl(id: String): String = "${"http://localhost:$port"}/preview?id=$id"
+    fun getPreviewUrl(id: String): String = "${"http://localhost:$port"}/preview?id=$id&_t=${System.currentTimeMillis()}"
 
     /**
      * Finds an available port to use.
@@ -87,7 +87,7 @@ class MermaidPreviewServer(parentDisposable: Disposable) : Disposable {
     private inner class PreviewHandler : HttpHandler {
         override fun handle(exchange: HttpExchange) {
             val query = exchange.requestURI.query
-            val id = query?.split("=")?.getOrNull(1)
+            val id = query?.split("&")[0]?.split("=")?.getOrNull(1)
 
             if (id == null || !diagramContents.containsKey(id)) {
                 exchange.sendResponseHeaders(404, 0)
