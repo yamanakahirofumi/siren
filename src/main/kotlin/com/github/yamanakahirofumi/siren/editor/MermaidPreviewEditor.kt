@@ -1,7 +1,6 @@
 package com.github.yamanakahirofumi.siren.editor
 
 import com.github.yamanakahirofumi.siren.server.MermaidPreviewServer
-import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -14,8 +13,8 @@ import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.jcef.JBCefBrowser
 import java.beans.PropertyChangeListener
-import javax.swing.JComponent
 import java.util.UUID
+import javax.swing.JComponent
 
 class MermaidPreviewEditor(private val project: Project, private val file: VirtualFile) :
     UserDataHolderBase(), FileEditor {
@@ -63,7 +62,9 @@ class MermaidPreviewEditor(private val project: Project, private val file: Virtu
                 <html>
                 <body>
                     <div style="color: red; padding: 20px;">
-                        Error rendering diagram: ${e.message?.replace("<", "&lt;")?.replace(">", "&gt;") ?: "Unknown error"}
+                        Error rendering diagram: ${
+                e.message?.replace("<", "&lt;")?.replace(">", "&gt;") ?: "Unknown error"
+            }
                     </div>
                 </body>
                 </html>
