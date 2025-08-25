@@ -4,7 +4,10 @@ import com.github.yamanakahirofumi.siren.server.MermaidPreviewServer
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
-import com.intellij.openapi.fileEditor.*
+import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.fileEditor.FileEditor
+import com.intellij.openapi.fileEditor.FileEditorLocation
+import com.intellij.openapi.fileEditor.FileEditorState
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.UserDataHolderBase
@@ -20,20 +23,30 @@ class MermaidPreviewEditor(private val project: Project, private val file: Virtu
     private val browser: JBCefBrowser = JBCefBrowser()
     private val server: MermaidPreviewServer = MermaidPreviewServer(this)
     private val diagramId: String = UUID.randomUUID().toString()
+    private var boundDocumentListener: DocumentListener? = null
+    private var boundDocument = FileDocumentManager.getInstance().getDocument(file)
 
     init {
         val documentListener = object : DocumentListener {
             override fun documentChanged(event: DocumentEvent) {
-                updatePreview(event.document.text)
+                // 編集中のドキュメントに限定
+                if (event.document == boundDocument) {
+                    updatePreview(event.document.text)
+                }
             }
         }
+        boundDocumentListener = documentListener
 
-        val fileDocument = EditorFactory.getInstance().createDocument(
+        // 実ファイルに紐づく Document が取得できた場合はそれを監視する
+        val initialText: String = if (boundDocument != null) {
+            boundDocument!!.addDocumentListener(documentListener)
+            boundDocument!!.text
+        } else {
+            // 取得できないケース（バイナリ/未ロードなど）のフォールバック
             file.contentsToByteArray().toString(Charsets.UTF_8)
-        )
-        fileDocument.addDocumentListener(documentListener)
+        }
 
-        updatePreview(fileDocument.text)
+        updatePreview(initialText)
     }
 
     private fun updatePreview(text: String) {
@@ -80,6 +93,13 @@ class MermaidPreviewEditor(private val project: Project, private val file: Virtu
     override fun getCurrentLocation(): FileEditorLocation? = null
 
     override fun dispose() {
+        // DocumentListener を確実に解除
+        val listener = boundDocumentListener
+        val doc = boundDocument
+        if (listener != null && doc != null) {
+            doc.removeDocumentListener(listener)
+        }
+
         Disposer.dispose(browser)
         Disposer.dispose(server)
     }

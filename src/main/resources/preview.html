@@ -77,15 +77,6 @@
         mermaid_render();
     }
 
-    function getData() {
-        return fetch('data.json')
-            .then(response => response.json())
-            .then(body => {
-                document.querySelector('#source').value = body.data;
-            });
-    }
-
-
     async function mermaid_render() {
         const mer = document.querySelector('.mermaid');
         const source = document.querySelector('#source');
