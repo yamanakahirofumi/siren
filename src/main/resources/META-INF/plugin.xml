@@ -16,6 +16,7 @@ Uses mermaid.js (MIT License) - Copyright (c) 2014 - 2024 Knut Sveidqvist
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>org.intellij.plugins.markdown</depends>
 
     <resource-bundle>messages.MyBundle</resource-bundle>
 
@@ -26,5 +27,9 @@ Uses mermaid.js (MIT License) - Copyright (c) 2014 - 2024 Knut Sveidqvist
                   language="Mermaid"
                   extensions="mermaid;mmd"/>
         <fileEditorProvider implementation="com.github.yamanakahirofumi.siren.editor.MermaidEditorProvider"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="org.intellij.markdown">
+        <fenceGeneratingProvider implementation="com.github.yamanakahirofumi.siren.markdown.MermaidCodeFenceGenerator"/>
     </extensions>
 </idea-plugin>
