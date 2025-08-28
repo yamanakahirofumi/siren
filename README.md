@@ -21,7 +21,7 @@ A Simple Renderer for Mermaid diagrams (Siren).
 
 Key Features:
  - Support for .mermaid and .mmd file formats
- - Integrated Mermaid diagram editor powered by mermaid.js v11.8.1
+ - Integrated Mermaid diagram editor powered by mermaid.js v11.10.1
  - Zoom in/out capability for diagram viewing
  - Simple and lightweight design
 

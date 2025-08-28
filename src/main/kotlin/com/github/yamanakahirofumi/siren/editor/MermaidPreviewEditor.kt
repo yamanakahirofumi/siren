@@ -36,7 +36,6 @@ class MermaidPreviewEditor(private val project: Project, private val file: Virtu
         }
         boundDocumentListener = documentListener
 
-        // 実ファイルに紐づく Document が取得できた場合はそれを監視する
         val initialText: String = if (boundDocument != null) {
             boundDocument!!.addDocumentListener(documentListener)
             boundDocument!!.text
@@ -45,32 +44,17 @@ class MermaidPreviewEditor(private val project: Project, private val file: Virtu
             file.contentsToByteArray().toString(Charsets.UTF_8)
         }
 
-        updatePreview(initialText)
+        initialize(initialText)
+    }
+
+    private fun initialize(text: String) {
+        server.updateDiagram(diagramId, text)
+        browser.loadURL(server.getPreviewUrl(diagramId))
     }
 
     private fun updatePreview(text: String) {
-        try {
-            // Update the diagram content on the server
-            server.updateDiagram(diagramId, text)
-
-            // Load the preview URL in the browser
-            browser.loadURL(server.getPreviewUrl(diagramId))
-        } catch (e: Exception) {
-            // エラーハンドリング - エラーメッセージを表示
-            val errorHtml = """
-                <!DOCTYPE html>
-                <html>
-                <body>
-                    <div style="color: red; padding: 20px;">
-                        Error rendering diagram: ${
-                e.message?.replace("<", "&lt;")?.replace(">", "&gt;") ?: "Unknown error"
-            }
-                    </div>
-                </body>
-                </html>
-            """.trimIndent()
-            browser.loadHTML(errorHtml)
-        }
+        server.updateDiagram(diagramId, text)
+        browser.cefBrowser.executeJavaScript("fetchDiagram()", "", 0)
     }
 
     override fun getComponent(): JComponent = browser.component
@@ -94,7 +78,6 @@ class MermaidPreviewEditor(private val project: Project, private val file: Virtu
     override fun getCurrentLocation(): FileEditorLocation? = null
 
     override fun dispose() {
-        // DocumentListener を確実に解除
         val listener = boundDocumentListener
         val doc = boundDocument
         if (listener != null && doc != null) {

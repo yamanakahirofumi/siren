@@ -138,6 +138,7 @@ tasks {
 
 intellijPlatformTesting {
     runIde {
+        // Enable JCEF DevTools for all runIde tasks
         register("runIdeForUiTests") {
             task {
                 jvmArgumentProviders += CommandLineArgumentProvider {
@@ -148,6 +149,8 @@ intellijPlatformTesting {
                         "-Djb.consents.confirmation.enabled=false",
                         "--illegal-access=permit",
                         "-Didea.is.internal=true",
+                        "-Dide.browser.jcef.devtools.enabled=true",
+                        "-Dide.browser.jcef.contextMenu.devTools.enabled=true",
                     )
                 }
             }

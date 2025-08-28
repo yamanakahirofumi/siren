@@ -2,6 +2,13 @@
 
 # siren Changelog
 
+## ver. 0.0.3
+### Change
+- Updated plugin template
+- 
+### mermaid.js
+- ver.11.10.1
+
 ## ver. 0.0.2
 ### Change
 - Updated plugin description
