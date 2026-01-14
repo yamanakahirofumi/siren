@@ -41,7 +41,6 @@
 <div class="mermaid">
 </div>
 <pre id="source" style="display: none">
-    %diagram%
 </pre>
 <div id="settings">
     <button id="zoom-in">+</button>
@@ -55,6 +54,8 @@
     });
     const zoom_step = 20;
     let zoom = 100;
+    let svgWidth = 0;
+    let svgHeight = 0;
 
     document.querySelector('button#zoom-in').addEventListener('click', () => {
         zoom += zoom_step;
@@ -67,14 +68,19 @@
         }
         zoom -= zoom_step;
         size_change();
-    })
+    });
 
     function size_change() {
-        const numbers = document.querySelector('.mermaid svg').getAttribute('viewBox').split(' ').map(Number);
-        document.querySelector('.mermaid').style.width = numbers[2] * zoom / 100 + "px";
-        document.querySelector('.mermaid').style.height = numbers[3] * zoom / 100 + "px";
+        document.querySelector('.mermaid').style.width = svgWidth * zoom / 100 + "px";
+        document.querySelector('.mermaid').style.height = svgHeight * zoom / 100 + "px";
         document.querySelector('#zoom-value').value = zoom + "%";
         mermaid_render();
+    }
+
+    function getSvgSize() {
+        const numbers = document.querySelector('.mermaid svg')?.getAttribute('viewBox').split(' ').map(Number);
+        svgWidth = numbers[2];
+        svgHeight = numbers[3];
     }
 
     async function mermaid_render() {
@@ -84,9 +90,34 @@
         mer.innerHTML = svg;
     }
 
-    async function initialize() {
-        await mermaid_render();
-        size_change();
+    function fetchDiagram() {
+        return fetch(window.location.href.replace(/\/preview/, '/diagram'))
+            .then(response => response.json())
+            .then(async json => {
+                document.querySelector('#source').innerText = json.content;
+                await mermaid_render();
+                getSvgSize();
+            });
+    }
+
+    function initialize() {
+        fetchDiagram()
+            .then(() => {
+                let initialZoom = calcZoom(window.innerWidth - 40, svgWidth);
+                const calcZoom1 = calcZoom(window.innerHeight - 40, svgHeight);
+                if (initialZoom > calcZoom1) {
+                    initialZoom = calcZoom1;
+                }
+                zoom = Math.floor(initialZoom);
+            })
+            .then(() => size_change());
+    }
+
+    function calcZoom(win, svg) {
+        if (win > svg) {
+            return 100;
+        }
+        return win / svg * 100;
     }
 
     initialize();
