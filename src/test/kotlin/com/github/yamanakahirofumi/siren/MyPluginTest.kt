@@ -1,13 +1,20 @@
 package com.github.yamanakahirofumi.siren
 
 import com.intellij.ide.highlighter.XmlFileType
+import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.psi.xml.XmlFile
 import com.intellij.testFramework.TestDataPath
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.util.PsiErrorElementUtil
+import java.io.File
 
 @TestDataPath("\$CONTENT_ROOT/src/test/testData")
 class MyPluginTest : BasePlatformTestCase() {
+
+    override fun setUp() {
+        super.setUp()
+        VfsRootAccess.allowRootAccess(testRootDisposable, File(getTestDataPath()).absolutePath)
+    }
 
     fun testXMLFile() {
         val psiFile = myFixture.configureByText(XmlFileType.INSTANCE, "<foo>bar</foo>")
