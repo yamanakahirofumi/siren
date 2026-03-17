@@ -13,6 +13,9 @@ Siren (Simple Renderer for Mermaid) は、Mermaid ダイアグラムのリアル
 - `.mermaid`
 - `.mmd`
 
+## 外部プラグイン連携
+- **Markdownプラグイン拡張**: 標準のMarkdownプラグイン内でのMermaid描画を拡張する方法については、[Markdownプラグイン拡張仕様](markdown_extension.md)を参照してください。
+
 ## 技術アーキテクチャ
 
 ### コンポーネント構成
