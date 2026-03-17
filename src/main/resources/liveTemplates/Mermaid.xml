@@ -1,0 +1,17 @@
+<templateSet group="Mermaid">
+    <template name="flow" value="graph TD&#10;    A[Square Rect] --&gt; B((Circle))&#10;    A --&gt; C(Round Rect)&#10;    B --&gt; D{Rhombus}&#10;    C --&gt; D" description="Basic flowchart" toReformat="true" toShortenFQNames="true">
+        <context>
+            <option name="MERMAID" value="true" />
+        </context>
+    </template>
+    <template name="seq" value="sequenceDiagram&#10;    participant Alice&#10;    participant Bob&#10;    Alice-&gt;&gt;Bob: Hello Bob, how are you?&#10;    Bob--&gt;&gt;Alice: Jolly good!" description="Basic sequence diagram" toReformat="true" toShortenFQNames="true">
+        <context>
+            <option name="MERMAID" value="true" />
+        </context>
+    </template>
+    <template name="class" value="classDiagram&#10;    Class01 &lt;|-- dev.Class02&#10;    Class03 *-- Class04&#10;    Class05 o-- Class06" description="Basic class diagram" toReformat="true" toShortenFQNames="true">
+        <context>
+            <option name="MERMAID" value="true" />
+        </context>
+    </template>
+</templateSet>
