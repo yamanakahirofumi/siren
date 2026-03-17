@@ -27,8 +27,10 @@ Uses mermaid.js (MIT License) - Copyright (c) 2014 - 2025 Knut Sveidqvist
                   language="Mermaid"
                   extensions="mermaid;mmd"/>
         <fileEditorProvider implementation="com.github.yamanakahirofumi.siren.editor.MermaidEditorProvider"/>
+    </extensions>
 
-        <org.intellij.markdown.browserPreviewExtensionProvider
+    <extensions defaultExtensionNs="org.intellij.markdown">
+        <browserPreviewExtensionProvider
                 implementation="com.github.yamanakahirofumi.siren.markdown.MermaidBrowserPreviewExtensionProvider"/>
     </extensions>
 </idea-plugin>

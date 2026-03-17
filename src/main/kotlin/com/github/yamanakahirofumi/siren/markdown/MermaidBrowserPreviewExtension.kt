@@ -1,65 +1,34 @@
 package com.github.yamanakahirofumi.siren.markdown
 
 import org.intellij.plugins.markdown.extensions.MarkdownBrowserPreviewExtension
-import com.intellij.util.ResourceUtil
+import org.intellij.plugins.markdown.ui.preview.ResourceProvider
+import java.net.URL
 
-class MermaidBrowserPreviewExtension : MarkdownBrowserPreviewExtension {
+class MermaidBrowserPreviewExtension : MarkdownBrowserPreviewExtension, ResourceProvider {
     override fun dispose() {}
 
+    override val priority: MarkdownBrowserPreviewExtension.Priority
+        get() = MarkdownBrowserPreviewExtension.Priority.AFTER_ALL
+
     override val scripts: List<String>
-        get() {
-            val mermaidJs = ResourceUtil.loadText(ResourceUtil.getResource(javaClass.classLoader, "", "mermaid.min.js"))
-            val renderScript = """
-                (function() {
-                    function renderMermaid() {
-                        if (typeof mermaid === 'undefined') {
-                            return;
-                        }
-                        mermaid.initialize({ startOnLoad: false, theme: 'default' });
-                        const blocks = document.querySelectorAll('pre > code.language-mermaid');
-                        blocks.forEach((block, index) => {
-                            const pre = block.parentElement;
-                            if (pre.style.display === 'none') return;
+        get() = listOf("mermaid-siren/mermaid.min.js", "mermaid-siren/render-mermaid.js")
 
-                            const container = document.createElement('div');
-                            container.className = 'mermaid';
-                            container.style.display = 'flex';
-                            container.style.justifyContent = 'center';
-                            container.style.background = 'white';
-                            container.id = 'mermaid-' + index;
-                            const content = block.textContent;
+    override val resourceProvider: ResourceProvider
+        get() = this
 
-                            pre.style.display = 'none';
-                            pre.parentNode.insertBefore(container, pre);
+    override fun canProvide(resourceName: String): Boolean {
+        return resourceName == "mermaid-siren/mermaid.min.js" || resourceName == "mermaid-siren/render-mermaid.js"
+    }
 
-                            mermaid.render('mermaid-svg-' + index, content).then(({svg}) => {
-                                container.innerHTML = svg;
-                            }).catch(err => {
-                                console.error('Mermaid render error:', err);
-                                container.innerText = 'Error rendering Mermaid diagram';
-                                pre.style.display = 'block';
-                            });
-                        });
-                    }
-
-                    if (document.readyState === 'complete') {
-                        renderMermaid();
-                    } else {
-                        window.addEventListener('load', renderMermaid);
-                    }
-
-                    // MutationObserver to handle dynamic updates in preview
-                    let timeout;
-                    const observer = new MutationObserver((mutations) => {
-                        clearTimeout(timeout);
-                        timeout = setTimeout(renderMermaid, 200);
-                    });
-                    observer.observe(document.body, { childList: true, subtree: true });
-                })();
-            """.trimIndent()
-            return listOf(mermaidJs, renderScript)
+    override fun loadResource(resourceName: String): ResourceProvider.Resource? {
+        val resourcePath = when (resourceName) {
+            "mermaid-siren/mermaid.min.js" -> "/mermaid.min.js"
+            "mermaid-siren/render-mermaid.js" -> "/mermaid-siren/render-mermaid.js"
+            else -> return null
         }
 
-    override val styles: List<String>
-        get() = emptyList()
+        val url: URL = javaClass.getResource(resourcePath) ?: return null
+        val bytes = url.openStream().use { it.readBytes() }
+        return ResourceProvider.Resource(bytes, "application/javascript")
+    }
 }
