@@ -26,5 +26,17 @@ Uses mermaid.js (MIT License) - Copyright (c) 2014 - 2025 Knut Sveidqvist
                   language="Mermaid"
                   extensions="mermaid;mmd"/>
         <fileEditorProvider implementation="com.github.yamanakahirofumi.siren.editor.MermaidEditorProvider"/>
+
+        <lang.parserDefinition language="Mermaid"
+                               implementationClass="com.github.yamanakahirofumi.siren.psi.MermaidParserDefinition"/>
+        <completion.contributor language="Mermaid"
+                                implementationClass="com.github.yamanakahirofumi.siren.completion.MermaidCompletionContributor"/>
+        <lang.commenter language="Mermaid" implementationClass="com.github.yamanakahirofumi.siren.editor.MermaidCommenter"/>
+        <lang.braceMatcher language="Mermaid" implementationClass="com.github.yamanakahirofumi.siren.editor.MermaidBraceMatcher"/>
+        <lang.syntaxHighlighterFactory language="Mermaid"
+                                       implementationClass="com.github.yamanakahirofumi.siren.highlight.MermaidSyntaxHighlighterFactory"/>
+
+        <liveTemplateContext implementation="com.github.yamanakahirofumi.siren.template.MermaidTemplateContextType"/>
+        <defaultLiveTemplates file="/liveTemplates/Mermaid.xml"/>
     </extensions>
 </idea-plugin>
