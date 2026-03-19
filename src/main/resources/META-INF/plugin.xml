@@ -16,6 +16,7 @@ Uses mermaid.js (MIT License) - Copyright (c) 2014 - 2025 Knut Sveidqvist
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>org.intellij.plugins.markdown</depends>
 
     <resource-bundle>messages.MyBundle</resource-bundle>
 
@@ -38,5 +39,9 @@ Uses mermaid.js (MIT License) - Copyright (c) 2014 - 2025 Knut Sveidqvist
 
         <liveTemplateContext implementation="com.github.yamanakahirofumi.siren.template.MermaidTemplateContextType"/>
         <defaultLiveTemplates file="/liveTemplates/Mermaid.xml"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="org.intellij.plugins.markdown">
+        <browserPreviewExtensionProvider implementation="com.github.yamanakahirofumi.siren.markdown.MermaidMarkdownPreviewExtensionProvider"/>
     </extensions>
 </idea-plugin>
