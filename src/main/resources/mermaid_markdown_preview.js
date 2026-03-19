@@ -27,49 +27,67 @@
 
     async function renderBlock(block, index) {
         if (block.getAttribute('data-mermaid-rendered')) return;
+        block.setAttribute('data-mermaid-rendered', 'true');
 
         const container = document.createElement('div');
         container.className = 'mermaid';
+        container.setAttribute('data-mermaid-rendered', 'true');
         const id = 'mermaid-diagram-' + Date.now() + '-' + index;
 
-        // Find the parent pre element, if any
         const parentPre = block.closest('pre');
-        const targetElement = parentPre || block;
+        const targetElement = (parentPre && parentPre !== block) ? parentPre : block;
 
         try {
-            const { svg } = await mermaid.render(id, block.textContent);
+            let code = block.innerText || block.textContent;
+            code = code.trim();
+
+            const { svg } = await mermaid.render(id, code);
             container.innerHTML = svg;
-            targetElement.parentNode.replaceChild(container, targetElement);
-            container.setAttribute('data-mermaid-rendered', 'true');
+            if (targetElement.parentNode) {
+                targetElement.parentNode.replaceChild(container, targetElement);
+            }
         } catch (error) {
-            console.error('Mermaid rendering error:', error);
             const errorElement = document.createElement('pre');
             errorElement.style.color = 'red';
             errorElement.textContent = 'Mermaid Error: ' + error.message;
-            targetElement.parentNode.replaceChild(errorElement, targetElement);
+            errorElement.setAttribute('data-mermaid-rendered', 'true');
+            if (targetElement.parentNode) {
+                targetElement.parentNode.replaceChild(errorElement, targetElement);
+            }
         }
     }
 
     function observeChanges() {
+        let timer = null;
         const observer = new MutationObserver((mutations) => {
             let shouldRender = false;
             mutations.forEach((mutation) => {
                 mutation.addedNodes.forEach((node) => {
                     if (node.nodeType === Node.ELEMENT_NODE) {
-                        if (node.matches('code.language-mermaid') || node.querySelector('code.language-mermaid')) {
+                        const selector = 'code.language-mermaid, div.mermaid, pre.mermaid';
+                        if ((node.matches(selector) || node.querySelector(selector)) && !node.closest('[data-mermaid-rendered]')) {
                             shouldRender = true;
                         }
                     }
                 });
+                if (mutation.type === 'characterData' || (mutation.type === 'childList' && mutation.target.nodeType === Node.ELEMENT_NODE)) {
+                    const block = mutation.target.closest && mutation.target.closest('code.language-mermaid, div.mermaid, pre.mermaid');
+                    if (block && block.getAttribute('data-mermaid-rendered')) {
+                        block.removeAttribute('data-mermaid-rendered');
+                        shouldRender = true;
+                    }
+                }
             });
             if (shouldRender) {
-                renderAllMermaidBlocks();
+                if (timer) clearTimeout(timer);
+                timer = setTimeout(renderAllMermaidBlocks, 100);
             }
         });
 
         observer.observe(document.body, {
             childList: true,
-            subtree: true
+            subtree: true,
+            characterData: true
         });
 
         // Observe theme changes
@@ -87,8 +105,8 @@
     }
 
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        initMermaid();
+        setTimeout(initMermaid, 500); // Give it a bit more time for other scripts
     } else {
-        document.addEventListener('DOMContentLoaded', initMermaid);
+        document.addEventListener('DOMContentLoaded', () => setTimeout(initMermaid, 500));
     }
 })();

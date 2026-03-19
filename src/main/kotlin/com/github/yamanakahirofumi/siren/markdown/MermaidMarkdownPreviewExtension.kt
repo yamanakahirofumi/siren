@@ -22,7 +22,7 @@ class MermaidMarkdownPreviewExtension : MarkdownBrowserPreviewExtension, Resourc
     override fun loadResource(resourceName: String): ResourceProvider.Resource? {
         val resourcePath = if (resourceName.startsWith("/")) resourceName else "/$resourceName"
         val url = javaClass.getResource(resourcePath) ?: return null
-        return ResourceProvider.Resource(url.readBytes())
+        return ResourceProvider.Resource(url.readBytes(), "application/javascript")
     }
 
     override fun dispose() {}

@@ -41,7 +41,7 @@ Uses mermaid.js (MIT License) - Copyright (c) 2014 - 2025 Knut Sveidqvist
         <defaultLiveTemplates file="/liveTemplates/Mermaid.xml"/>
     </extensions>
 
-    <extensions defaultExtensionNs="org.intellij.plugins.markdown">
+    <extensions defaultExtensionNs="org.intellij.markdown">
         <browserPreviewExtensionProvider implementation="com.github.yamanakahirofumi.siren.markdown.MermaidMarkdownPreviewExtensionProvider"/>
     </extensions>
 </idea-plugin>
