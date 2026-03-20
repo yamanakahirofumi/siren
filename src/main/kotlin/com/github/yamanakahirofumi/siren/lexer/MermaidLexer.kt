@@ -12,8 +12,6 @@ class MermaidLexer : LexerBase() {
     private var tokenType: IElementType? = null
     private var tokenEnd: Int = 0
 
-    private val arrows = listOf("-->", "---", "->>", "->", "--x", "-x", "--)", "-)").sortedByDescending { it.length }
-
     override fun start(buffer: CharSequence, startOffset: Int, endOffset: Int, initialState: Int) {
         this.buffer = buffer
         this.startOffset = startOffset
@@ -40,7 +38,15 @@ class MermaidLexer : LexerBase() {
 
         val remaining = buffer.subSequence(currentOffset, endOffset)
 
-        // Skip whitespace
+        if (tryHandleWhitespace(remaining)) return
+        if (tryHandleComment(remaining)) return
+        if (tryHandleBraces(remaining)) return
+        if (tryHandleArrows(remaining)) return
+
+        handleKeywordsAndText(remaining)
+    }
+
+    private fun tryHandleWhitespace(remaining: CharSequence): Boolean {
         var i = 0
         while (i < remaining.length && remaining[i].isWhitespace()) {
             i++
@@ -49,10 +55,12 @@ class MermaidLexer : LexerBase() {
         if (i > 0) {
             tokenType = com.intellij.psi.TokenType.WHITE_SPACE
             tokenEnd = currentOffset + i
-            return
+            return true
         }
+        return false
+    }
 
-        // Comments
+    private fun tryHandleComment(remaining: CharSequence): Boolean {
         if (remaining.startsWith("%%")) {
             tokenType = MermaidTokenTypes.COMMENT
             var end = 2
@@ -60,58 +68,48 @@ class MermaidLexer : LexerBase() {
                 end++
             }
             tokenEnd = currentOffset + end
-            return
+            return true
+        }
+        return false
+    }
+
+    private fun tryHandleBraces(remaining: CharSequence): Boolean {
+        val type = when (remaining[0]) {
+            '(' -> MermaidTokenTypes.LPAREN
+            ')' -> MermaidTokenTypes.RPAREN
+            '[' -> MermaidTokenTypes.LBRACKET
+            ']' -> MermaidTokenTypes.RBRACKET
+            '{' -> MermaidTokenTypes.LBRACE
+            '}' -> MermaidTokenTypes.RBRACE
+            else -> null
         }
 
-        // Braces
-        when (remaining[0]) {
-            '(' -> {
-                tokenType = MermaidTokenTypes.LPAREN
-                tokenEnd = currentOffset + 1
-                return
-            }
-            ')' -> {
-                tokenType = MermaidTokenTypes.RPAREN
-                tokenEnd = currentOffset + 1
-                return
-            }
-            '[' -> {
-                tokenType = MermaidTokenTypes.LBRACKET
-                tokenEnd = currentOffset + 1
-                return
-            }
-            ']' -> {
-                tokenType = MermaidTokenTypes.RBRACKET
-                tokenEnd = currentOffset + 1
-                return
-            }
-            '{' -> {
-                tokenType = MermaidTokenTypes.LBRACE
-                tokenEnd = currentOffset + 1
-                return
-            }
-            '}' -> {
-                tokenType = MermaidTokenTypes.RBRACE
-                tokenEnd = currentOffset + 1
-                return
-            }
+        if (type != null) {
+            tokenType = type
+            tokenEnd = currentOffset + 1
+            return true
         }
+        return false
+    }
 
-        // Arrows
-        for (arrow in arrows) {
+    private fun tryHandleArrows(remaining: CharSequence): Boolean {
+        for (arrow in ARROWS) {
             if (remaining.startsWith(arrow)) {
                 tokenType = MermaidTokenTypes.ARROW
                 tokenEnd = currentOffset + arrow.length
-                return
+                return true
             }
         }
+        return false
+    }
 
-        // Keywords and Text
+    private fun handleKeywordsAndText(remaining: CharSequence) {
         var end = 0
         while (end < remaining.length &&
-               !remaining[end].isWhitespace() &&
-               remaining[end] !in "()[]{}" &&
-               !isArrowStart(remaining.subSequence(end, remaining.length))) {
+            !remaining[end].isWhitespace() &&
+            remaining[end] !in "()[]{}" &&
+            !isArrowStart(remaining.subSequence(end, remaining.length))
+        ) {
             end++
         }
 
@@ -120,16 +118,16 @@ class MermaidLexer : LexerBase() {
         }
 
         val word = remaining.subSequence(0, end).toString()
-        if (MermaidTokenTypes.KEYWORDS_STR.contains(word)) {
-            tokenType = MermaidTokenTypes.KEYWORD
+        tokenType = if (MermaidTokenTypes.KEYWORDS_STR.contains(word)) {
+            MermaidTokenTypes.KEYWORD
         } else {
-            tokenType = MermaidTokenTypes.TEXT
+            MermaidTokenTypes.TEXT
         }
         tokenEnd = currentOffset + end
     }
 
     private fun isArrowStart(remaining: CharSequence): Boolean {
-        for (arrow in arrows) {
+        for (arrow in ARROWS) {
             if (remaining.startsWith(arrow)) return true
         }
         return false
@@ -138,4 +136,8 @@ class MermaidLexer : LexerBase() {
     override fun getBufferSequence(): CharSequence = buffer
 
     override fun getBufferEnd(): Int = endOffset
+
+    companion object {
+        private val ARROWS = listOf("-->", "---", "->>", "->", "--x", "-x", "--)", "-)").sortedByDescending { it.length }
+    }
 }
