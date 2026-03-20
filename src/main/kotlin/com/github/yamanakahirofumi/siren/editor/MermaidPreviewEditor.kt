@@ -26,9 +26,13 @@ class MermaidPreviewEditor(private val project: Project, private val file: Virtu
     private var boundDocument = FileDocumentManager.getInstance().getDocument(file)
 
     init {
+        val initialText = setupDocumentListener()
+        updatePreview(initialText)
+    }
+
+    private fun setupDocumentListener(): String {
         val documentListener = object : DocumentListener {
             override fun documentChanged(event: DocumentEvent) {
-                // 編集中のドキュメントに限定
                 if (event.document == boundDocument) {
                     updatePreview(event.document.text)
                 }
@@ -36,41 +40,36 @@ class MermaidPreviewEditor(private val project: Project, private val file: Virtu
         }
         boundDocumentListener = documentListener
 
-        // 実ファイルに紐づく Document が取得できた場合はそれを監視する
-        val initialText: String = if (boundDocument != null) {
-            boundDocument!!.addDocumentListener(documentListener)
-            boundDocument!!.text
+        val doc = boundDocument
+        return if (doc != null) {
+            doc.addDocumentListener(documentListener)
+            doc.text
         } else {
-            // 取得できないケース（バイナリ/未ロードなど）のフォールバック
             file.contentsToByteArray().toString(Charsets.UTF_8)
         }
-
-        updatePreview(initialText)
     }
 
     private fun updatePreview(text: String) {
         try {
-            // Update the diagram content on the server
             server.updateDiagram(diagramId, text)
-
-            // Load the preview URL in the browser
             browser.loadURL(server.getPreviewUrl(diagramId))
         } catch (e: Exception) {
-            // エラーハンドリング - エラーメッセージを表示
-            val errorHtml = """
-                <!DOCTYPE html>
-                <html>
-                <body>
-                    <div style="color: red; padding: 20px;">
-                        Error rendering diagram: ${
-                e.message?.replace("<", "&lt;")?.replace(">", "&gt;") ?: "Unknown error"
-            }
-                    </div>
-                </body>
-                </html>
-            """.trimIndent()
-            browser.loadHTML(errorHtml)
+            browser.loadHTML(getErrorHtml(e.message))
         }
+    }
+
+    private fun getErrorHtml(message: String?): String {
+        val escapedMessage = message?.replace("<", "&lt;")?.replace(">", "&gt;") ?: "Unknown error"
+        return """
+            <!DOCTYPE html>
+            <html>
+            <body>
+                <div style="color: red; padding: 20px;">
+                    Error rendering diagram: $escapedMessage
+                </div>
+            </body>
+            </html>
+        """.trimIndent()
     }
 
     override fun getComponent(): JComponent = browser.component
@@ -94,11 +93,8 @@ class MermaidPreviewEditor(private val project: Project, private val file: Virtu
     override fun getCurrentLocation(): FileEditorLocation? = null
 
     override fun dispose() {
-        // DocumentListener を確実に解除
-        val listener = boundDocumentListener
-        val doc = boundDocument
-        if (listener != null && doc != null) {
-            doc.removeDocumentListener(listener)
+        boundDocumentListener?.let { listener ->
+            boundDocument?.removeDocumentListener(listener)
         }
 
         Disposer.dispose(browser)

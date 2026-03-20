@@ -23,12 +23,16 @@ interface MermaidTokenTypes {
         val ARROW = IElementType("MERMAID_ARROW", MermaidLanguage.INSTANCE)
 
         val COMMENTS = TokenSet.create(COMMENT)
+
         val KEYWORDS_STR = setOf(
-            "graph", "flowchart", "sequenceDiagram", "classDiagram", "stateDiagram", "stateDiagram-v2",
-            "erDiagram", "journey", "gantt", "pie", "requirementDiagram", "gitGraph", "C4Context", "mindmap", "timeline",
-            "subgraph", "end", "participant", "actor", "as", "loop", "alt", "else", "opt", "par", "and", "rect", "critical",
-            "option", "break", "autonumber", "activate", "deactivate", "note", "left", "right", "over", "title", "class",
-            "style", "callback", "click", "link", "linkStyle"
+            // Diagram types
+            "C4Context", "classDiagram", "erDiagram", "flowchart", "gantt", "gitGraph", "graph", "journey", "mindmap",
+            "pie", "requirementDiagram", "sequenceDiagram", "stateDiagram", "stateDiagram-v2", "timeline",
+
+            // General keywords
+            "activate", "alt", "and", "as", "actor", "autonumber", "break", "callback", "class", "click", "critical",
+            "deactivate", "else", "end", "left", "link", "linkStyle", "loop", "note", "opt", "option", "over", "par",
+            "participant", "rect", "right", "style", "subgraph", "title"
         )
     }
 }
