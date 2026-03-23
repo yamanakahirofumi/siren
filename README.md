@@ -3,6 +3,7 @@
 ![Build](https://github.com/yamanakahirofumi/siren/workflows/Build/badge.svg)
 [![Version](https://img.shields.io/jetbrains/plugin/v/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/27999)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/27999.svg)](https://plugins.jetbrains.com/plugin/27999)
+[![codecov](https://codecov.io/github/yamanakahirofumi/siren/graph/badge.svg?token=JNLBIZ4ZBK)](https://codecov.io/github/yamanakahirofumi/siren)
 
 ## Template ToDo list
 - [x] Create a new [IntelliJ Platform Plugin Template][template] project.
