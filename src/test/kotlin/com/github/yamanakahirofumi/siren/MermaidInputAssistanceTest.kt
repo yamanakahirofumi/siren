@@ -28,6 +28,19 @@ class MermaidInputAssistanceTest : BasePlatformTestCase() {
         }
     }
 
+    fun testCompletionMoreDiagramTypes() {
+        myFixture.configureByText("test.mermaid", "<caret>")
+        myFixture.complete(CompletionType.BASIC)
+        val lookupElementStrings = myFixture.lookupElementStrings
+        assertNotNull(lookupElementStrings)
+        val moreExpectedTypes = listOf(
+            "zenuml", "sankey-beta", "xychart-beta", "block-beta", "packet", "kanban", "architecture-beta", "radar-beta", "treemap-beta", "venn-beta"
+        )
+        for (type in moreExpectedTypes) {
+            assertTrue("Should contain $type", lookupElementStrings!!.contains(type))
+        }
+    }
+
     fun testCompletionKeywords() {
         myFixture.configureByText("test.mermaid", "graph TD\nsub<caret>")
         myFixture.complete(CompletionType.BASIC)
@@ -37,6 +50,20 @@ class MermaidInputAssistanceTest : BasePlatformTestCase() {
             myFixture.checkResult("graph TD\nsubgraph")
         } else {
             assertTrue(lookupElementStrings.contains("subgraph"))
+        }
+    }
+
+    fun testCompletionSpecificKeywords() {
+        val keywords = listOf("activate", "loop", "alt", "rect")
+        for (keyword in keywords) {
+            myFixture.configureByText("test.mermaid", "sequenceDiagram\n${keyword.substring(0, 3)}<caret>")
+            myFixture.complete(CompletionType.BASIC)
+            val lookupElementStrings = myFixture.lookupElementStrings
+            if (lookupElementStrings == null) {
+                assertTrue(myFixture.editor.document.text.contains(keyword))
+            } else {
+                assertTrue("Should contain $keyword", lookupElementStrings.contains(keyword))
+            }
         }
     }
 
@@ -56,9 +83,17 @@ class MermaidInputAssistanceTest : BasePlatformTestCase() {
         myFixture.configureByText("test.mermaid", "graph TD\n  A<caret>")
         myFixture.type('(')
         myFixture.checkResult("graph TD\n  A(<caret>)")
+    }
 
-        // Remove parens for next test or just continue.
-        // If I type '[', and brace matching is on, it might result in A([<caret>]) if it's smart,
-        // but here it seems it's just basic.
+    fun testBraceMatchingSquare() {
+        myFixture.configureByText("test.mermaid", "graph TD\n  A<caret>")
+        myFixture.type('[')
+        myFixture.checkResult("graph TD\n  A[<caret>]")
+    }
+
+    fun testBraceMatchingCurly() {
+        myFixture.configureByText("test.mermaid", "graph TD\n  A<caret>")
+        myFixture.type('{')
+        myFixture.checkResult("graph TD\n  A{<caret>}")
     }
 }

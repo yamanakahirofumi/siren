@@ -28,6 +28,7 @@ interface MermaidTokenTypes {
             // Diagram types
             "C4Context", "classDiagram", "erDiagram", "flowchart", "gantt", "gitGraph", "graph", "journey", "mindmap",
             "pie", "requirementDiagram", "sequenceDiagram", "stateDiagram", "stateDiagram-v2", "timeline",
+            "zenuml", "sankey-beta", "xychart-beta", "block-beta", "packet", "kanban", "architecture-beta", "radar-beta", "treemap-beta", "venn-beta",
 
             // General keywords
             "activate", "alt", "and", "as", "actor", "autonumber", "break", "callback", "class", "click", "critical",
