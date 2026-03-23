@@ -79,4 +79,40 @@ class MermaidLexerTest : BasePlatformTestCase() {
             assertEquals("Testing brace text: $text", text, lexer.tokenText)
         }
     }
+
+    fun testLexerEdgeCases() {
+        val lexer = MermaidLexer()
+
+        // Arrow without spaces
+        lexer.start("A-->B")
+        assertEquals(MermaidTokenTypes.TEXT, lexer.tokenType)
+        assertEquals("A", lexer.tokenText)
+        lexer.advance()
+        assertEquals(MermaidTokenTypes.ARROW, lexer.tokenType)
+        assertEquals("-->", lexer.tokenText)
+        lexer.advance()
+        assertEquals(MermaidTokenTypes.TEXT, lexer.tokenType)
+        assertEquals("B", lexer.tokenText)
+
+        // Arrow at the end
+        lexer.start("A-->")
+        lexer.advance()
+        assertEquals(MermaidTokenTypes.ARROW, lexer.tokenType)
+        assertEquals("-->", lexer.tokenText)
+        lexer.advance()
+        assertNull(lexer.tokenType)
+
+        // Keyword as part of identifier
+        lexer.start("subgraphing")
+        assertEquals(MermaidTokenTypes.TEXT, lexer.tokenType)
+        assertEquals("subgraphing", lexer.tokenText)
+
+        // Multiple arrows back to back (unlikely but good for boundary)
+        lexer.start("----->")
+        assertEquals(MermaidTokenTypes.ARROW, lexer.tokenType)
+        assertEquals("---", lexer.tokenText)
+        lexer.advance()
+        assertEquals(MermaidTokenTypes.ARROW, lexer.tokenType)
+        assertEquals("-->", lexer.tokenText)
+    }
 }
