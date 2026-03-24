@@ -16,11 +16,14 @@ import java.beans.PropertyChangeListener
 import java.util.UUID
 import javax.swing.JComponent
 
-class MermaidPreviewEditor(private val project: Project, private val file: VirtualFile) :
-    UserDataHolderBase(), FileEditor {
+class MermaidPreviewEditor @JvmOverloads constructor(
+    private val project: Project,
+    private val file: VirtualFile,
+    private val browser: JBCefBrowser = JBCefBrowser(),
+    server: MermaidPreviewServer? = null
+) : UserDataHolderBase(), FileEditor {
 
-    private val browser: JBCefBrowser = JBCefBrowser()
-    private val server: MermaidPreviewServer = MermaidPreviewServer(this)
+    private val myServer: MermaidPreviewServer = server ?: MermaidPreviewServer(this)
     private val diagramId: String = UUID.randomUUID().toString()
     private var boundDocumentListener: DocumentListener? = null
     private var boundDocument = FileDocumentManager.getInstance().getDocument(file)
@@ -51,8 +54,8 @@ class MermaidPreviewEditor(private val project: Project, private val file: Virtu
 
     private fun updatePreview(text: String) {
         try {
-            server.updateDiagram(diagramId, text)
-            browser.loadURL(server.getPreviewUrl(diagramId))
+            myServer.updateDiagram(diagramId, text)
+            browser.loadURL(myServer.getPreviewUrl(diagramId))
         } catch (e: Exception) {
             browser.loadHTML(getErrorHtml(e.message))
         }
@@ -98,6 +101,6 @@ class MermaidPreviewEditor(private val project: Project, private val file: Virtu
         }
 
         Disposer.dispose(browser)
-        Disposer.dispose(server)
+        Disposer.dispose(myServer)
     }
 }
