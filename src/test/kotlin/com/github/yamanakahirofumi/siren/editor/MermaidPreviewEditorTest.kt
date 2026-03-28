@@ -8,10 +8,16 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.ui.jcef.JBCefApp
 import com.intellij.ui.jcef.JBCefBrowser
+import com.intellij.openapi.fileEditor.FileEditorState
+import com.intellij.openapi.vfs.VirtualFile
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.ArgumentMatchers.contains
+import org.mockito.ArgumentMatchers.eq
+import org.mockito.ArgumentMatchers.startsWith
 import org.mockito.Mockito.atLeastOnce
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
+import java.beans.PropertyChangeListener
 import javax.swing.JPanel
 import org.mockito.Mockito.`when` as whenever
 
@@ -144,22 +150,73 @@ class MermaidPreviewEditorTest : BasePlatformTestCase() {
         verify(mockServer).dispose()
     }
 
-    fun testEditorWithoutDocument() {
-        // Create a file without a document in FileDocumentManager (or at least simulate that branch)
-        val file = myFixture.addFileToProject("test2.mermaid", "graph TD").virtualFile
+    fun testEditorWithFileOnly() {
+        val file = mock(VirtualFile::class.java)
+        whenever(file.contentsToByteArray()).thenReturn("graph TD".toByteArray(Charsets.UTF_8))
+
         val mockBrowser = mock(JBCefBrowser::class.java)
         val mockServer = mock(MermaidPreviewServer::class.java)
-
-        // We want boundDocument to be null.
-        // FileDocumentManager.getInstance().getDocument(file) usually returns a document for files in the project.
-        // But if we use a mock file or a file outside the project it might be null.
 
         val editor = MermaidPreviewEditor(project, file, mockBrowser, mockServer)
         try {
             assertNotNull(editor)
-            verify(mockServer).updateDiagram(anyString(), anyString())
+            // Initial update uses the text from the file
+            verify(mockServer).updateDiagram(anyString(), startsWith("graph TD"))
         } finally {
             Disposer.dispose(editor)
         }
+    }
+
+    fun testErrorHtmlWithNullMessage() {
+        val file = myFixture.configureByText("test_error.mermaid", "graph TD").virtualFile
+        val mockBrowser = mock(JBCefBrowser::class.java)
+        val mockServer = mock(MermaidPreviewServer::class.java)
+
+        // Force an exception with null message
+        whenever(mockServer.updateDiagram(anyString(), anyString())).thenThrow(RuntimeException(null as String?))
+
+        val editor = MermaidPreviewEditor(project, file, mockBrowser, mockServer)
+        try {
+            verify(mockBrowser).loadHTML(contains("Unknown error"))
+        } finally {
+            Disposer.dispose(editor)
+        }
+    }
+
+    fun testFileEditorInterfaceMethods() {
+        val file = myFixture.configureByText("test_interface.mermaid", "graph TD").virtualFile
+        val mockBrowser = mock(JBCefBrowser::class.java)
+        val mockServer = mock(MermaidPreviewServer::class.java)
+        val editor = MermaidPreviewEditor(project, file, mockBrowser, mockServer)
+
+        try {
+            // These should not crash
+            editor.setState(mock(FileEditorState::class.java))
+            assertFalse(editor.isModified)
+            assertTrue(editor.isValid)
+            assertNull(editor.currentLocation)
+
+            val listener = mock(PropertyChangeListener::class.java)
+            editor.addPropertyChangeListener(listener)
+            editor.removePropertyChangeListener(listener)
+        } finally {
+            Disposer.dispose(editor)
+        }
+    }
+
+    fun testDisposeWithNullDocument() {
+        val file = mock(VirtualFile::class.java)
+        whenever(file.contentsToByteArray()).thenReturn("graph TD".toByteArray(Charsets.UTF_8))
+
+        val mockBrowser = mock(JBCefBrowser::class.java)
+        val mockServer = mock(MermaidPreviewServer::class.java)
+
+        val editor = MermaidPreviewEditor(project, file, mockBrowser, mockServer)
+        // boundDocument will be null because it's a mock file not in FileDocumentManager
+
+        Disposer.dispose(editor)
+
+        verify(mockBrowser).dispose()
+        verify(mockServer).dispose()
     }
 }
