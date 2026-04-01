@@ -45,7 +45,7 @@ class MermaidPreviewEditor @JvmOverloads constructor(
 
         val doc = boundDocument
         return if (doc != null) {
-            doc.addDocumentListener(documentListener)
+            doc.addDocumentListener(documentListener, project)
             doc.text
         } else {
             file.contentsToByteArray().toString(Charsets.UTF_8)
@@ -96,10 +96,6 @@ class MermaidPreviewEditor @JvmOverloads constructor(
     override fun getCurrentLocation(): FileEditorLocation? = null
 
     override fun dispose() {
-        boundDocumentListener?.let { listener ->
-            boundDocument?.removeDocumentListener(listener)
-        }
-
         Disposer.dispose(browser)
         Disposer.dispose(myServer)
     }

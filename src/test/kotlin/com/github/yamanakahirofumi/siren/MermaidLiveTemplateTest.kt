@@ -39,6 +39,7 @@ class MermaidLiveTemplateTest : BasePlatformTestCase() {
         assertNotNull("Template $templateName not found", template)
 
         myFixture.type(templateName + "\t")
+        println("expectedResult: \n$expectedResult")
         myFixture.checkResult(expectedResult)
     }
 }
