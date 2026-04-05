@@ -26,7 +26,7 @@ Siren (Simple Renderer for Mermaid) は、Mermaid ダイアグラムのリアル
 4. **MermaidPreviewServer**: HTML テンプレートと Mermaid コンテンツを提供する組み込み HTTP サーバ (`com.sun.net.httpserver.HttpServer` を使用) です。
 5. **リソース**:
    - `preview.html`: レンダリングに使用される HTML テンプレート。
-- `mermaid.min.js`: Mermaid.js ライブラリ (v11.13.0)。
+- `mermaid.min.js`: Mermaid.js ライブラリ (v11.14.0)。
 
 ### 動作フロー
 1. Mermaid ファイルが開かれると、`MermaidEditorProvider` が `MermaidPreviewEditor` を生成します。
@@ -68,7 +68,7 @@ sequenceDiagram
 
 ### 入力補助機能
 - Mermaid ダイアグラムを効率的に作成するための各種機能を備えています。
-- 最新の Mermaid.js (v11.13.0) でサポートされる広範なダイアグラムタイプ（フローチャート、シーケンス図、ガントチャート、かんばん図、アーキテクチャ図など）に対応した入力補助を提供します。
+- 最新の Mermaid.js (v11.14.0) でサポートされる広範なダイアグラムタイプ（フローチャート、シーケンス図、ガントチャート、かんばん図、アーキテクチャ図など）に対応した入力補助を提供します。
 - 詳細は [入力補助機能仕様](input_assistance.md) を参照してください。
 
 ### ズーム機能
@@ -95,5 +95,5 @@ sequenceDiagram
 
 ## 依存関係
 - IntelliJ Platform SDK
-- Mermaid.js v11.13.0
+- Mermaid.js v11.14.0
 - JCEF (Java Chromium Embedded Framework): レンダリング用

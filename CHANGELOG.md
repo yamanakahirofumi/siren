@@ -2,6 +2,17 @@
 
 # siren Changelog
 
+## ver. 0.0.4
+### Change
+- Base IntelliJ Platform 2026.1
+
+## ver. 0.0.3
+### Added
+- Mermaid diagram rendering in standard Markdown preview
+- Comprehensive input assistance for all Mermaid.js v11.13.0 diagram types (Architecture, Kanban, etc.)
+### mermaid.js
+- Support for mermaid.js v11.13.0
+
 ## ver. 0.0.2
 ### Change
 - Updated plugin description
