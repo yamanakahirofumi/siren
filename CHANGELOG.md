@@ -2,6 +2,10 @@
 
 # siren Changelog
 
+## ver. 0.0.4
+### Change
+- Base IntelliJ Platform 2026.1
+
 ## ver. 0.0.3
 ### Added
 - Mermaid diagram rendering in standard Markdown preview
