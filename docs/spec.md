@@ -82,6 +82,20 @@ sequenceDiagram
 - `MermaidPreviewServer` は `com.sun.net.httpserver.HttpServer` を使用した軽量な HTTP サーバーです。
 - ポートの競合を避けるため、`ServerSocket(0)` を利用して実行時に利用可能なポートを自動的に割り当てます。
 - `Disposable` インターフェースを実装しており、エディタが閉じられる際にサーバーの停止とスレッドプールのシャットダウンが確実に行われます。
+- **ハンドラー構成**:
+    - `RootHandler`: `/` へのリクエストを処理。
+    - `PreviewHandler`: `/preview` へのリクエストを処理し、指定されたIDのダイアグラムを含む `preview.html` を返却。
+    - `ResourceHandler`: `mermaid.min.js` などの静的リソースを配信。
+
+### JCEF サポートとテスト
+- ダイアグラムのレンダリングには JCEF (`JBCefBrowser`) を使用しています。
+- JCEF がサポートされていない環境（一部の OS やヘッドレス環境）でのクラッシュを防ぐため、テストや初期化時には `JBCefApp.isSupported()` を使用して可用性を確認します。
+
+### メンテナンス
+
+#### Mermaid.js の更新
+- プラグインに同梱されている `mermaid.min.js` は、ルートディレクトリの `update_mermaid.sh` スクリプトを使用して更新できます。
+- このスクリプトは npm から最新バージョンを取得し、`mermaid.min.js` をダウンロードするとともに、`README.md`, `plugin.xml`, `docs/spec.md` 内のバージョン表記を自動的に更新します。
 
 ## 開発とテスト
 
