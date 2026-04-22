@@ -24,9 +24,11 @@ Siren (Simple Renderer for Mermaid) は、Mermaid ダイアグラムのリアル
 2. **MermaidEditorProvider**: Mermaid ファイルを検出し、`MermaidPreviewEditor` を提供します。
 3. **MermaidPreviewEditor**: ダイアグラムを表示するための JCEF ブラウザをホストするメイン UI コンポーネントです。ドキュメントの変更を監視し、更新をトリガーします。
 4. **MermaidPreviewServer**: HTML テンプレートと Mermaid コンテンツを提供する組み込み HTTP サーバ (`com.sun.net.httpserver.HttpServer` を使用) です。
+   - **ResourceHandler**: `mermaid.min.js` などの静的アセットをクラスパスから読み込み、適切な Content-Type でブラウザに提供します。
+   - **PreviewHandler**: 動的な `preview.html` を生成し、最新のダイアグラムテキストを埋め込んで提供します。
 5. **リソース**:
    - `preview.html`: レンダリングに使用される HTML テンプレート。
-- `mermaid.min.js`: Mermaid.js ライブラリ (v11.14.0)。
+   - `mermaid.min.js`: Mermaid.js ライブラリ (v11.14.0)。
 
 ### 動作フロー
 1. Mermaid ファイルが開かれると、`MermaidEditorProvider` が `MermaidPreviewEditor` を生成します。
