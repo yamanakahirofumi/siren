@@ -35,7 +35,6 @@ fi
 # Update version strings in files
 FILES_TO_UPDATE=(
     "README.md"
-    "src/main/resources/META-INF/plugin.xml"
     "docs/spec.md"
 )
 

@@ -2,6 +2,10 @@
 
 # siren Changelog
 
+## ver. 0.0.5
+### mermaid.js
+- Support for mermaid.js v11.14.0
+
 ## ver. 0.0.4
 ### Change
 - Base IntelliJ Platform 2026.1
