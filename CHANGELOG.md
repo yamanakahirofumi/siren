@@ -2,6 +2,14 @@
 
 # siren Changelog
 
+## ver. 0.0.6
+
+### mermaid.js
+- Support for mermaid.js v12.0.0
+
+### Change
+- Fix deprecated API usages
+
 ## ver. 0.0.5
 ### mermaid.js
 - Support for mermaid.js v11.14.0
